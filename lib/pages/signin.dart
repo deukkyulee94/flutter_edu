@@ -1,14 +1,44 @@
 import 'package:flutter/material.dart';
+import '../service/user_service.dart';
 
-class Signin extends StatelessWidget {
+class Signin extends StatefulWidget {
   const Signin({super.key});
 
+  @override
+  State<Signin> createState() => _SigninState();
+}
+
+class _SigninState extends State<Signin> {
   final Color gray = const Color.fromRGBO(217, 217, 217, 1);
   final Color white = const Color.fromRGBO(255, 255, 255, 1);
   final Color green = const Color.fromRGBO(106, 202, 124, 1);
 
+  void _showAlert(String message) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        backgroundColor: white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        content: Text(message),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    String email = '';
+    String password = '';
     return Scaffold(
       body: Center(
         child: Column(
@@ -25,7 +55,6 @@ class Signin extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Column(
-                  //crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 로그인
                     Align(
@@ -48,6 +77,7 @@ class Signin extends StatelessWidget {
                             height: 50,
                             width: 250,
                             child: TextField(
+                              onChanged: (value) => email = value,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
@@ -72,6 +102,7 @@ class Signin extends StatelessWidget {
                             height: 50,
                             width: 250,
                             child: TextField(
+                              onChanged: (value) => password = value,
                               obscureText: true,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
@@ -96,7 +127,14 @@ class Signin extends StatelessWidget {
                             height: 50,
                             width: 250,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                Response res =
+                                    await UserApiService().signin(User(
+                                  email: email,
+                                  password: password,
+                                ));
+                                _showAlert(res.message);
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: white,
                                 shape: RoundedRectangleBorder(
