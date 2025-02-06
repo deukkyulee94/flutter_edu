@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../service/user_service.dart';
 
-class Signin extends StatefulWidget {
-  const Signin({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
   @override
-  State<Signin> createState() => _SigninState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _SigninState extends State<Signin> {
+class _SignupState extends State<Signup> {
   final Color gray = const Color.fromRGBO(217, 217, 217, 1);
   final Color white = const Color.fromRGBO(255, 255, 255, 1);
   final Color green = const Color.fromRGBO(106, 202, 124, 1);
@@ -23,13 +23,13 @@ class _SigninState extends State<Signin> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        content: Text(message),
+        content: Text(status ? '$message\n로그인 페이지로 이동합니다.' : message),
         actions: [
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               if (status) {
-                context.push('/todo');
+                context.push('/signin');
               }
             },
             child: Text('확인'),
@@ -42,6 +42,7 @@ class _SigninState extends State<Signin> {
   @override
   Widget build(BuildContext context) {
     String email = '';
+    String name = '';
     String password = '';
     return Scaffold(
       body: Center(
@@ -52,7 +53,7 @@ class _SigninState extends State<Signin> {
               width: 500,
               height: 600,
               decoration: BoxDecoration(
-                color: gray,
+                color: green,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Padding(
@@ -60,18 +61,7 @@ class _SigninState extends State<Signin> {
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Column(
                   children: [
-                    // 로그인
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '로그인',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 120),
+                    SizedBox(height: 150),
                     Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,6 +72,31 @@ class _SigninState extends State<Signin> {
                             width: 250,
                             child: TextField(
                               onChanged: (value) => email = value,
+                              decoration: InputDecoration(
+                                filled: true, // 배경색 활성화
+                                fillColor: white, // 배경색 지정
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(10), // 둥근 테두리
+                                ),
+                                // 비활성 상태 테두리 색
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: white),
+                                ),
+                                // 포커스 상태 테두리 색
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: white),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text('이름'),
+                          SizedBox(
+                            height: 50,
+                            width: 250,
+                            child: TextField(
+                              onChanged: (value) => name = value,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
@@ -133,8 +148,9 @@ class _SigninState extends State<Signin> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 Response res =
-                                    await UserApiService().signin(User(
+                                    await UserApiService().signup(User(
                                   email: email,
+                                  name: name,
                                   password: password,
                                 ));
                                 _showAlert(res.status, res.message);
@@ -146,7 +162,7 @@ class _SigninState extends State<Signin> {
                                 ),
                               ),
                               child: Text(
-                                '로그인',
+                                '회원가입',
                                 style: TextStyle(
                                   color: Colors.black,
                                 ),
@@ -156,26 +172,36 @@ class _SigninState extends State<Signin> {
                         ],
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 320, top: 30),
+                      child: Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             Transform.translate(
-              offset: Offset(0, -100),
+              offset: Offset(0, -600),
               child: GestureDetector(
-                onTap: () => context.push('/signup'),
+                onTap: () => context.push('/signin'),
                 child: Container(
                   width: 500,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: green,
+                    color: gray,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 20),
                     child: Text(
-                      '회원가입',
+                      '로그인',
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w700,

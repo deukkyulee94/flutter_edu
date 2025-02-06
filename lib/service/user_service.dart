@@ -35,6 +35,12 @@ class UserApiService {
       // 토큰 저장
       SharedPreferences.getInstance().then(
           (prefs) => prefs.setString('token', response.data['data']['token']));
+
+      return Response(
+        status: response.statusCode == HttpStatus.ok,
+        statusCode: response.statusCode ?? 0,
+        message: response.data['message'],
+      );
     } else {
       return Response(
         status: false,
@@ -42,11 +48,28 @@ class UserApiService {
         message: response.data['message'],
       );
     }
+  }
 
-    return Response(
-      status: response.statusCode == HttpStatus.ok,
-      statusCode: response.statusCode ?? 0,
-      message: response.data['message'],
-    );
+  Future<Response> signup(User user) async {
+    final response = await dio.post('/signup', data: {
+      'email': user.email,
+      'name': user.name,
+      'password': user.password,
+    });
+
+    // 회원가입 성공시
+    if (response.statusCode == HttpStatus.ok && response.data['data'] != null) {
+      return Response(
+        status: true,
+        statusCode: response.statusCode ?? 0,
+        message: response.data['message'],
+      );
+    } else {
+      return Response(
+        status: false,
+        statusCode: response.statusCode ?? 0,
+        message: response.data['message'],
+      );
+    }
   }
 }
