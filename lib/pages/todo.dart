@@ -13,6 +13,9 @@ class Todo extends StatefulWidget {
 class _TodoState extends State<Todo> {
   String? token;
   String? name;
+  String newTodo = '';
+  late TextEditingController newTodoController;
+  bool isShowAddTodo = false;
   List<TodoModel> todos = [];
 
   @override
@@ -20,6 +23,7 @@ class _TodoState extends State<Todo> {
     super.initState();
     _loadToken();
     _loadTodos();
+    newTodoController = TextEditingController();
   }
 
   Future<void> _loadToken() async {
@@ -92,8 +96,7 @@ class _TodoState extends State<Todo> {
                           onUpdate: (String newTodo, bool state) async {
                             // async 추가
                             // setState 밖에서 비동기 작업 수행
-                            final response = await TodoService()
-                                .updateTodo(todo.todoId, newTodo, state);
+                            final response = await TodoService().updateTodo(todo.todoId, newTodo, state);
                             if (response.status) {
                               // 성공 시 상태 업데이트
                               setState(() {
@@ -106,8 +109,7 @@ class _TodoState extends State<Todo> {
                           onUpdateState: (String newTodo, bool state) async {
                             // async 추가
                             // setState 밖에서 비동기 작업 수행
-                            final response = await TodoService()
-                                .updateTodo(todo.todoId, newTodo, state);
+                            final response = await TodoService().updateTodo(todo.todoId, newTodo, state);
                             if (response.status) {
                               // 성공 시 상태 업데이트
                               setState(() {
@@ -118,8 +120,7 @@ class _TodoState extends State<Todo> {
                           onDelete: (String todoId) async {
                             // async 추가
                             // setState 밖에서 비동기 작업 수행
-                            final response =
-                                await TodoService().deleteTodo(todo.todoId);
+                            final response = await TodoService().deleteTodo(todo.todoId);
                             if (response.status) {
                               // 성공 시 상태 업데이트
                               setState(() {
@@ -131,8 +132,7 @@ class _TodoState extends State<Todo> {
                           },
                         );
                       },
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 10), // width를 height로 변경
+                      separatorBuilder: (context, index) => const SizedBox(height: 10), // width를 height로 변경
                       itemCount: todos.length,
                     ),
                   ),
@@ -140,70 +140,105 @@ class _TodoState extends State<Todo> {
               ),
             ),
           ),
+          // 할일 등록 영역
           Padding(
             // 추가 버튼을 Padding으로 감싸기
             padding: const EdgeInsets.only(right: 20, left: 180),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 1153,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    color: green,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '할일 등록',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 25),
-                        Row(
-                          children: [
-                            SizedBox(width: 10),
-                          ],
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: white,
-                            border: OutlineInputBorder(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                              borderSide: BorderSide(color: white),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                              borderSide: BorderSide(color: white),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                              borderSide: BorderSide(color: white),
+                if (isShowAddTodo)
+                  Container(
+                    width: 1153,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      color: green,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 70),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '할일 등록',
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 25),
-                      ],
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 850,
+                                height: 45,
+                                child: TextField(
+                                  controller: newTodoController,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: white),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 50),
+                              IconButton(
+                                onPressed: () async {
+                                  // TODO: API 호출하여 todo 추가
+                                  newTodo = newTodoController.text;
+
+                                  final response = await TodoService().addTodo(newTodoController.text);
+
+                                  if (response.status) {
+                                    // 성공 시 상태 업데이트
+                                    _loadTodos();
+                                    isShowAddTodo = !isShowAddTodo;
+                                    newTodoController.clear();
+                                  } else {
+                                    print(response.message);
+                                  }
+                                  // API 호출 로직 추가
+                                },
+                                icon: Icon(
+                                  Icons.download,
+                                  color: Colors.black,
+                                  size: 48,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                if (!isShowAddTodo)
+                  SizedBox(
+                    width: 100,
+                    height: 160,
+                  ),
                 IconButton(
                   onPressed: () {
-                    // TODO: API 호출하여 todo 추가
+                    setState(() {
+                      isShowAddTodo = !isShowAddTodo;
+                      newTodoController.clear();
+                    });
                   },
                   icon: Icon(
                     Icons.add_circle_outline,
