@@ -4,7 +4,9 @@ import 'pages/signin.dart';
 import 'pages/signup.dart';
 import 'pages/todo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// GoRouter 설정
 final _router = GoRouter(
   initialLocation: '/signin',
   redirect: (context, state) async {
@@ -34,7 +36,9 @@ final _router = GoRouter(
 );
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {

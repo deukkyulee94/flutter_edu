@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/todo_card.dart';
-import '../service/todo_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/todo_provider.dart';
 
-class Todo extends StatefulWidget {
+class Todo extends ConsumerStatefulWidget {
   const Todo({super.key});
 
   @override
-  State<Todo> createState() => _TodoState();
+  ConsumerState<Todo> createState() => _TodoState();
 }
 
-class _TodoState extends State<Todo> {
+class _TodoState extends ConsumerState<Todo> {
   String? token;
   String? name;
   String newTodo = '';
   late TextEditingController newTodoController;
   bool isShowAddTodo = false;
-  List<TodoModel> todos = [];
 
   @override
   void initState() {
     super.initState();
     _loadToken();
-    _loadTodos();
+    Future.microtask(() => ref.read(todoProvider.notifier).fetchTodos());
     newTodoController = TextEditingController();
   }
 
@@ -34,19 +34,6 @@ class _TodoState extends State<Todo> {
     });
   }
 
-  Future<void> _loadTodos() async {
-    final response = await TodoService().getTodos();
-    print(response.data);
-
-    if (response.status) {
-      setState(() {
-        todos = response.data;
-      });
-    } else {
-      print(response.message);
-    }
-  }
-
   final Color gray = const Color.fromRGBO(217, 217, 217, 1);
   final Color textGray = const Color.fromRGBO(128, 128, 128, 1);
   final Color white = const Color.fromRGBO(255, 255, 255, 1);
@@ -55,6 +42,8 @@ class _TodoState extends State<Todo> {
 
   @override
   Widget build(BuildContext context) {
+    final todos = ref.watch(todoProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -87,52 +76,24 @@ class _TodoState extends State<Todo> {
                   Expanded(
                     child: ListView.separated(
                       itemBuilder: (context, index) {
-                        var todo = todos[index];
+                        final todo = todos[index];
                         return TodoCard(
                           todoId: todo.todoId,
                           state: todo.state,
                           todo: todo.todo,
                           created: todo.created,
                           onUpdate: (String newTodo, bool state) async {
-                            // async 추가
-                            // setState 밖에서 비동기 작업 수행
-                            final response = await TodoService().updateTodo(todo.todoId, newTodo, state);
-                            if (response.status) {
-                              // 성공 시 상태 업데이트
-                              setState(() {
-                                todos[index].todo = newTodo;
-                              });
-                            } else {
-                              print(response.message);
-                            }
+                            await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
                           },
                           onUpdateState: (String newTodo, bool state) async {
-                            // async 추가
-                            // setState 밖에서 비동기 작업 수행
-                            final response = await TodoService().updateTodo(todo.todoId, newTodo, state);
-                            if (response.status) {
-                              // 성공 시 상태 업데이트
-                              setState(() {
-                                todos[index].state = state;
-                              });
-                            }
+                            await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
                           },
                           onDelete: (String todoId) async {
-                            // async 추가
-                            // setState 밖에서 비동기 작업 수행
-                            final response = await TodoService().deleteTodo(todo.todoId);
-                            if (response.status) {
-                              // 성공 시 상태 업데이트
-                              setState(() {
-                                todos.removeAt(index);
-                              });
-                            } else {
-                              print(response.message);
-                            }
+                            await ref.read(todoProvider.notifier).deleteTodo(todo.todoId);
                           },
                         );
                       },
-                      separatorBuilder: (context, index) => const SizedBox(height: 10), // width를 height로 변경
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
                       itemCount: todos.length,
                     ),
                   ),
@@ -201,20 +162,11 @@ class _TodoState extends State<Todo> {
                               SizedBox(width: 50),
                               IconButton(
                                 onPressed: () async {
-                                  // TODO: API 호출하여 todo 추가
-                                  newTodo = newTodoController.text;
-
-                                  final response = await TodoService().addTodo(newTodoController.text);
-
-                                  if (response.status) {
-                                    // 성공 시 상태 업데이트
-                                    _loadTodos();
-                                    isShowAddTodo = !isShowAddTodo;
+                                  await ref.read(todoProvider.notifier).addTodo(newTodoController.text);
+                                  setState(() {
+                                    isShowAddTodo = false;
                                     newTodoController.clear();
-                                  } else {
-                                    print(response.message);
-                                  }
-                                  // API 호출 로직 추가
+                                  });
                                 },
                                 icon: Icon(
                                   Icons.download,
