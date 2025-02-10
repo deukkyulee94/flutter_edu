@@ -56,8 +56,7 @@ class _SigninState extends State<Signin> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Column(
                   children: [
                     // 로그인
@@ -86,8 +85,7 @@ class _SigninState extends State<Signin> {
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10), // 둥근 테두리
+                                  borderRadius: BorderRadius.circular(10), // 둥근 테두리
                                 ),
                                 // 비활성 상태 테두리 색
                                 enabledBorder: OutlineInputBorder(
@@ -112,8 +110,7 @@ class _SigninState extends State<Signin> {
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10), // 둥근 테두리
+                                  borderRadius: BorderRadius.circular(10), // 둥근 테두리
                                 ),
                                 // 비활성 상태 테두리 색
                                 enabledBorder: OutlineInputBorder(
@@ -132,8 +129,7 @@ class _SigninState extends State<Signin> {
                             width: 250,
                             child: ElevatedButton(
                               onPressed: () async {
-                                Response res =
-                                    await UserApiService().signin(User(
+                                Response res = await UserApiService().signin(User(
                                   email: email,
                                   password: password,
                                 ));
@@ -172,8 +168,7 @@ class _SigninState extends State<Signin> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                     child: Text(
                       '회원가입',
                       style: TextStyle(
