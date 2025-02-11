@@ -82,7 +82,7 @@ class _SigninState extends State<Signin> {
                             child: TextField(
                               onChanged: (value) => email = value,
                               decoration: InputDecoration(
-                                hintText: '이메일을 입력해주세요',
+                                hintText: '이메일을 입력해주세요.',
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
                                 border: OutlineInputBorder(
@@ -108,6 +108,7 @@ class _SigninState extends State<Signin> {
                               onChanged: (value) => password = value,
                               obscureText: true,
                               decoration: InputDecoration(
+                                hintText: '비밀번호를 입력해주세요.',
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
                                 border: OutlineInputBorder(
