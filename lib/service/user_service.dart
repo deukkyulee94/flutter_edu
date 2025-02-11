@@ -19,14 +19,10 @@ class Response {
 }
 
 class UserApiService {
-  final dio = Dio(BaseOptions(
-      baseUrl:
-          //'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/users',
-          'http://127.0.0.1:5000/users'));
+  final dio = Dio(BaseOptions(baseUrl: 'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/users'));
 
   Future<Response> signin(User user) async {
-    print(
-        'UserService :: signin email: ${user.email} password: ${user.password}');
+    print('UserService :: signin email: ${user.email} password: ${user.password}');
 
     final response = await dio.post('/signin', data: {
       'email': user.email,
@@ -58,8 +54,7 @@ class UserApiService {
   }
 
   Future<Response> signup(User user) async {
-    print(
-        'UserService :: signup email: ${user.email} name: ${user.name} password: ${user.password}');
+    print('UserService :: signup email: ${user.email} name: ${user.name} password: ${user.password}');
 
     final response = await dio.post('/signup', data: {
       'email': user.email,

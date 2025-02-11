@@ -27,18 +27,11 @@ class Response {
   final String message;
   final List<TodoModel> data;
 
-  Response(
-      {this.status = false,
-      this.statusCode = 0,
-      this.message = '',
-      this.data = const []});
+  Response({this.status = false, this.statusCode = 0, this.message = '', this.data = const []});
 }
 
 class TodoService {
-  final dio = Dio(BaseOptions(
-      baseUrl:
-          //'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/users',
-          'http://127.0.0.1:5000/todos'));
+  final dio = Dio(BaseOptions(baseUrl: 'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/todos'));
 
   /// 모든 할일 조회
   Future<Response> getTodos() async {
