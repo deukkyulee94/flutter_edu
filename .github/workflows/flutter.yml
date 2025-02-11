@@ -41,4 +41,4 @@ jobs:
             --recursive \
             --region ap-northeast-2 \
             ./build/web \
-            s3://sury-gs25-pos
+            s3://evan-front
