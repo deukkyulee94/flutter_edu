@@ -82,6 +82,7 @@ class _SigninState extends State<Signin> {
                             child: TextField(
                               onChanged: (value) => email = value,
                               decoration: InputDecoration(
+                                hintText: '이메일을 입력해주세요',
                                 filled: true, // 배경색 활성화
                                 fillColor: white, // 배경색 지정
                                 border: OutlineInputBorder(
