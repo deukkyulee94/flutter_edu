@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_edu/common/common_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
@@ -19,7 +20,7 @@ class Response {
 }
 
 class UserApiService {
-  final dio = Dio(BaseOptions(baseUrl: 'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/users'));
+  final dio = Dio(BaseOptions(baseUrl: CommonApi.baseUrl + CommonApi.userEndpoint));
 
   Future<Response> signin(User user) async {
     print('UserService :: signin email: ${user.email} password: ${user.password}');

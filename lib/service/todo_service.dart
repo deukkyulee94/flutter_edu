@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_edu/common/common_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
@@ -31,7 +32,7 @@ class Response {
 }
 
 class TodoService {
-  final dio = Dio(BaseOptions(baseUrl: 'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/todos'));
+  final dio = Dio(BaseOptions(baseUrl: CommonApi.baseUrl + CommonApi.todoEndpoint));
 
   /// 모든 할일 조회
   Future<Response> getTodos() async {
