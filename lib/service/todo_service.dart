@@ -6,8 +6,8 @@ import 'dart:io';
 
 class TodoModel {
   final String todoId;
-  bool state;
-  String todo;
+  final bool state;
+  final String todo;
   final String created;
 
   TodoModel({
