@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'pages/signin.dart';
 import 'pages/signup.dart';
@@ -36,6 +37,7 @@ final _router = GoRouter(
 );
 
 void main() {
+  usePathUrlStrategy();
   runApp(
     const ProviderScope(child: MyApp()),
   );
