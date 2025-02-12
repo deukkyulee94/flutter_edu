@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edu/common/common_colors.dart';
 
 class TodoCard extends StatefulWidget {
   const TodoCard({
@@ -27,10 +28,6 @@ class _TodoCardState extends State<TodoCard> {
   late bool state;
   late bool isEditing;
   late final TextEditingController todoController;
-  final Color gray = const Color.fromRGBO(217, 217, 217, 1);
-  final Color textGray = const Color.fromRGBO(128, 128, 128, 1);
-  final Color white = const Color.fromRGBO(255, 255, 255, 1);
-  final Color green = const Color.fromRGBO(106, 202, 124, 1);
 
   @override
   void initState() {
@@ -52,7 +49,7 @@ class _TodoCardState extends State<TodoCard> {
       height: 100,
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
-        color: gray,
+        color: CommonColors.gray,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
@@ -83,28 +80,27 @@ class _TodoCardState extends State<TodoCard> {
                             width: 750,
                             height: 50,
                             child: TextField(
-                              controller:
-                                  todoController, // TextField에 TextEditingController 연결
+                              controller: todoController, // TextField에 TextEditingController 연결
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: white,
+                                fillColor: CommonColors.white,
                                 border: OutlineInputBorder(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(10),
                                   ),
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(10),
                                   ),
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(10),
                                   ),
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                               ),
                             ),
@@ -112,23 +108,19 @@ class _TodoCardState extends State<TodoCard> {
                         : Text(
                             widget.todo,
                             style: TextStyle(
-                              decoration: state
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
+                              decoration: state ? TextDecoration.lineThrough : TextDecoration.none,
                               fontSize: 36,
                               fontWeight: FontWeight.w400,
-                              color: state ? textGray : Colors.black,
+                              color: state ? CommonColors.textGray : Colors.black,
                             ),
                           ),
                     Text(
                       '등록일시 : ${widget.created}',
                       style: TextStyle(
-                        decoration: state
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
+                        decoration: state ? TextDecoration.lineThrough : TextDecoration.none,
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        color: state ? textGray : Colors.black,
+                        color: state ? CommonColors.textGray : Colors.black,
                       ),
                     )
                   ],
@@ -161,8 +153,7 @@ class _TodoCardState extends State<TodoCard> {
                     onPressed: () => {
                       widget.onDelete(widget.todoId),
                     },
-                    icon: Icon(Icons.delete_outlined,
-                        color: Colors.black, size: 48),
+                    icon: Icon(Icons.delete_outlined, color: Colors.black, size: 48),
                   ),
                 ],
               ),

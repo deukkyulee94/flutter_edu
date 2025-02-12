@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edu/common/common_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/todo_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,12 +35,6 @@ class _TodoState extends ConsumerState<Todo> {
     });
   }
 
-  final Color gray = const Color.fromRGBO(217, 217, 217, 1);
-  final Color textGray = const Color.fromRGBO(128, 128, 128, 1);
-  final Color white = const Color.fromRGBO(255, 255, 255, 1);
-  final Color green = const Color.fromRGBO(106, 202, 124, 1);
-  final Color blue = const Color.fromRGBO(0, 33, 245, 1);
-
   @override
   Widget build(BuildContext context) {
     final todos = ref.watch(todoProvider);
@@ -50,7 +45,7 @@ class _TodoState extends ConsumerState<Todo> {
           width: MediaQuery.of(context).size.width, // 화면 전체 너비 가져오기
           height: 80,
           decoration: BoxDecoration(
-            color: gray,
+            color: CommonColors.gray,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -113,7 +108,7 @@ class _TodoState extends ConsumerState<Todo> {
                     width: 1153,
                     height: 160,
                     decoration: BoxDecoration(
-                      color: green,
+                      color: CommonColors.green,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
@@ -137,24 +132,24 @@ class _TodoState extends ConsumerState<Todo> {
                                   controller: newTodoController,
                                   decoration: InputDecoration(
                                     filled: true,
-                                    fillColor: white,
+                                    fillColor: CommonColors.white,
                                     border: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(10),
                                       ),
-                                      borderSide: BorderSide(color: white),
+                                      borderSide: BorderSide(color: CommonColors.white),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(10),
                                       ),
-                                      borderSide: BorderSide(color: white),
+                                      borderSide: BorderSide(color: CommonColors.white),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(10),
                                       ),
-                                      borderSide: BorderSide(color: white),
+                                      borderSide: BorderSide(color: CommonColors.white),
                                     ),
                                   ),
                                 ),
@@ -194,7 +189,7 @@ class _TodoState extends ConsumerState<Todo> {
                   },
                   icon: Icon(
                     Icons.add_circle_outline,
-                    color: blue,
+                    color: CommonColors.blue,
                     size: 96,
                   ),
                 ),
