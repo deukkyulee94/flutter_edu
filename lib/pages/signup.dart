@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edu/common/common_colors.dart';
+import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:go_router/go_router.dart';
 import '../service/user_service.dart';
 
@@ -10,16 +12,12 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  final Color gray = const Color.fromRGBO(217, 217, 217, 1);
-  final Color white = const Color.fromRGBO(255, 255, 255, 1);
-  final Color green = const Color.fromRGBO(106, 202, 124, 1);
-
   void _showAlert(bool status, String message) {
     if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        backgroundColor: white,
+        backgroundColor: CommonColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -53,12 +51,11 @@ class _SignupState extends State<Signup> {
               width: 500,
               height: 600,
               decoration: BoxDecoration(
-                color: green,
+                color: CommonColors.green,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Column(
                   children: [
                     SizedBox(height: 150),
@@ -74,18 +71,17 @@ class _SignupState extends State<Signup> {
                               onChanged: (value) => email = value,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
-                                fillColor: white, // 배경색 지정
+                                fillColor: CommonColors.white, // 배경색 지정
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10), // 둥근 테두리
+                                  borderRadius: BorderRadius.circular(10), // 둥근 테두리
                                 ),
                                 // 비활성 상태 테두리 색
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                                 // 포커스 상태 테두리 색
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                               ),
                             ),
@@ -99,18 +95,17 @@ class _SignupState extends State<Signup> {
                               onChanged: (value) => name = value,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
-                                fillColor: white, // 배경색 지정
+                                fillColor: CommonColors.white, // 배경색 지정
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10), // 둥근 테두리
+                                  borderRadius: BorderRadius.circular(10), // 둥근 테두리
                                 ),
                                 // 비활성 상태 테두리 색
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                                 // 포커스 상태 테두리 색
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                               ),
                             ),
@@ -125,18 +120,17 @@ class _SignupState extends State<Signup> {
                               obscureText: true,
                               decoration: InputDecoration(
                                 filled: true, // 배경색 활성화
-                                fillColor: white, // 배경색 지정
+                                fillColor: CommonColors.white, // 배경색 지정
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10), // 둥근 테두리
+                                  borderRadius: BorderRadius.circular(10), // 둥근 테두리
                                 ),
                                 // 비활성 상태 테두리 색
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                                 // 포커스 상태 테두리 색
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: white),
+                                  borderSide: BorderSide(color: CommonColors.white),
                                 ),
                               ),
                             ),
@@ -147,16 +141,19 @@ class _SignupState extends State<Signup> {
                             width: 250,
                             child: ElevatedButton(
                               onPressed: () async {
-                                Response res =
-                                    await UserApiService().signup(User(
-                                  email: email,
-                                  name: name,
-                                  password: password,
-                                ));
-                                _showAlert(res.status, res.message);
+                                try {
+                                  Response res = await UserApiService().signup(User(
+                                    email: email,
+                                    name: name,
+                                    password: password,
+                                  ));
+                                  _showAlert(res.status, res.message);
+                                } catch (error) {
+                                  ErrorHandler.handleError(context, error);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: white,
+                                backgroundColor: CommonColors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5),
                                 ),
@@ -194,12 +191,11 @@ class _SignupState extends State<Signup> {
                   width: 500,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: gray,
+                    color: CommonColors.gray,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                     child: Text(
                       '로그인',
                       style: TextStyle(

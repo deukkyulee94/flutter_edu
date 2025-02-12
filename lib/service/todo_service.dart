@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_edu/common/common_api.dart';
+import 'package:flutter_edu/common/logger.dart';
+import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 class TodoModel {
   final String todoId;
-  bool state;
-  String todo;
+  final bool state;
+  final String todo;
   final String created;
 
   TodoModel({
@@ -31,31 +34,39 @@ class Response {
 }
 
 class TodoService {
-  final dio = Dio(BaseOptions(baseUrl: 'https://w6r8ie8xr7.execute-api.ap-northeast-2.amazonaws.com/dev/todos'));
+  final dio = Dio(BaseOptions(baseUrl: CommonApi.todoEndpoint));
 
   /// 모든 할일 조회
   Future<Response> getTodos() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? '';
-    dio.options.headers[HttpHeaders.authorizationHeader] = token;
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String token = prefs.getString('token') ?? '';
+      dio.options.headers[HttpHeaders.authorizationHeader] = token;
 
-    final response = await dio.get('/');
+      final response = await dio.get('/');
+      logger.d('TodoService :: getTodos response: ${response.data}');
+      if (response.statusCode != HttpStatus.ok) {
+        throw AppError('할 일 목록을 가져오는데 실패했습니다.', statusCode: response.statusCode);
+      }
 
-    print('TodoService :: getTodos response: ${response.data}');
-
-    return Response(
-      status: response.statusCode == HttpStatus.ok,
-      statusCode: response.statusCode ?? 0,
-      message: response.statusMessage ?? '',
-      data: (response.data['data'] as List)
-          .map((e) => TodoModel(
-                todoId: e['todo_id'],
-                state: e['state'],
-                todo: e['todo'],
-                created: e['created'],
-              ))
-          .toList(),
-    );
+      return Response(
+        status: response.statusCode == HttpStatus.ok,
+        statusCode: response.statusCode ?? 0,
+        message: response.statusMessage ?? '',
+        data: (response.data['data'] as List)
+            .map((e) => TodoModel(
+                  todoId: e['todo_id'],
+                  state: e['state'],
+                  todo: e['todo'],
+                  created: e['created'],
+                ))
+            .toList(),
+      );
+    } on DioException catch (e) {
+      throw AppError(e.response?.data['message'] ?? '네트워크 오류가 발생했습니다.', statusCode: e.response?.statusCode);
+    } catch (e) {
+      throw AppError('예상치 못한 오류가 발생했습니다.');
+    }
   }
 
   /// 할일 추가
@@ -68,7 +79,7 @@ class TodoService {
       'todo': todo,
     });
 
-    print('TodoService :: addTodo response: ${response.data}');
+    logger.d('TodoService :: addTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,
@@ -88,7 +99,7 @@ class TodoService {
       'state': state,
     });
 
-    print('TodoService :: updateTodo response: ${response.data}');
+    logger.d('TodoService :: updateTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,
@@ -105,7 +116,7 @@ class TodoService {
 
     final response = await dio.delete('/$todoId');
 
-    print('TodoService :: deleteTodo response: ${response.data}');
+    logger.d('TodoService :: deleteTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,
