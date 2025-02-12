@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edu/common/common_colors.dart';
+import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:go_router/go_router.dart';
 import '../service/user_service.dart';
 
@@ -140,12 +141,16 @@ class _SignupState extends State<Signup> {
                             width: 250,
                             child: ElevatedButton(
                               onPressed: () async {
-                                Response res = await UserApiService().signup(User(
-                                  email: email,
-                                  name: name,
-                                  password: password,
-                                ));
-                                _showAlert(res.status, res.message);
+                                try {
+                                  Response res = await UserApiService().signup(User(
+                                    email: email,
+                                    name: name,
+                                    password: password,
+                                  ));
+                                  _showAlert(res.status, res.message);
+                                } catch (error) {
+                                  ErrorHandler.handleError(context, error);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: CommonColors.white,

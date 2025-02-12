@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edu/common/common_colors.dart';
+import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:go_router/go_router.dart';
 import '../service/user_service.dart';
 
@@ -128,11 +129,16 @@ class _SigninState extends State<Signin> {
                             width: 250,
                             child: ElevatedButton(
                               onPressed: () async {
-                                Response res = await UserApiService().signin(User(
-                                  email: email,
-                                  password: password,
-                                ));
-                                _showAlert(res.status, res.message);
+                                Response res;
+                                try {
+                                  res = await UserApiService().signin(User(
+                                    email: email,
+                                    password: password,
+                                  ));
+                                  _showAlert(res.status, res.message);
+                                } catch (error) {
+                                  ErrorHandler.handleError(context, error);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: CommonColors.white,

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_edu/common/common_api.dart';
+import 'package:flutter_edu/common/logger.dart';
 import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
@@ -33,7 +34,7 @@ class Response {
 }
 
 class TodoService {
-  final dio = Dio(BaseOptions(baseUrl: CommonApi.baseUrl + CommonApi.todoEndpoint));
+  final dio = Dio(BaseOptions(baseUrl: CommonApi.todoEndpoint));
 
   /// 모든 할일 조회
   Future<Response> getTodos() async {
@@ -43,7 +44,7 @@ class TodoService {
       dio.options.headers[HttpHeaders.authorizationHeader] = token;
 
       final response = await dio.get('/');
-      print('TodoService :: getTodos response: ${response.data}');
+      logger.d('TodoService :: getTodos response: ${response.data}');
       if (response.statusCode != HttpStatus.ok) {
         throw AppError('할 일 목록을 가져오는데 실패했습니다.', statusCode: response.statusCode);
       }
@@ -61,7 +62,7 @@ class TodoService {
                 ))
             .toList(),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw AppError(e.response?.data['message'] ?? '네트워크 오류가 발생했습니다.', statusCode: e.response?.statusCode);
     } catch (e) {
       throw AppError('예상치 못한 오류가 발생했습니다.');
@@ -78,7 +79,7 @@ class TodoService {
       'todo': todo,
     });
 
-    print('TodoService :: addTodo response: ${response.data}');
+    logger.d('TodoService :: addTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,
@@ -98,7 +99,7 @@ class TodoService {
       'state': state,
     });
 
-    print('TodoService :: updateTodo response: ${response.data}');
+    logger.d('TodoService :: updateTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,
@@ -115,7 +116,7 @@ class TodoService {
 
     final response = await dio.delete('/$todoId');
 
-    print('TodoService :: deleteTodo response: ${response.data}');
+    logger.d('TodoService :: deleteTodo response: ${response.data}');
 
     return Response(
       status: response.statusCode == HttpStatus.ok,

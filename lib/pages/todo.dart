@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edu/common/common_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widgets/todo_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/todo_card.dart';
 import '../providers/todo_provider.dart';
-import '../utils/error_handler.dart';
 
 class Todo extends ConsumerStatefulWidget {
   const Todo({super.key});
@@ -38,6 +37,8 @@ class _TodoState extends ConsumerState<Todo> {
 
   @override
   Widget build(BuildContext context) {
+    final todos = ref.watch(todoProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -58,160 +59,146 @@ class _TodoState extends ConsumerState<Todo> {
         ),
         automaticallyImplyLeading: false, // 뒤로가기 버튼 제거
       ),
-      body: FutureBuilder(
-        future: ref.read(todoProvider.notifier).fetchTodos(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            ErrorHandler.handleError(context, snapshot.error);
-            return const Center(child: Text('데이터를 불러오는데 실패했습니다.'));
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final todos = ref.watch(todoProvider);
-
-          return Column(
-            children: [
-              Expanded(
-                // 전체 body를 Expanded로 감싸기
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 180),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 85),
-                      Expanded(
-                        child: ListView.separated(
-                          itemBuilder: (context, index) {
-                            final todo = todos[index];
-                            return TodoCard(
-                              todoId: todo.todoId,
-                              state: todo.state,
-                              todo: todo.todo,
-                              created: todo.created,
-                              onUpdate: (String newTodo, bool state) async {
-                                await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
-                              },
-                              onUpdateState: (String newTodo, bool state) async {
-                                await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
-                              },
-                              onDelete: (String todoId) async {
-                                await ref.read(todoProvider.notifier).deleteTodo(todo.todoId);
-                              },
-                            );
-                          },
-                          separatorBuilder: (context, index) => const SizedBox(height: 10),
-                          itemCount: todos.length,
+      body: Column(
+        children: [
+          Expanded(
+            // 전체 body를 Expanded로 감싸기
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 180),
+              child: Column(
+                children: [
+                  SizedBox(height: 85),
+                  todos.isEmpty
+                      ? CircularProgressIndicator()
+                      : Expanded(
+                          child: ListView.separated(
+                            itemBuilder: (context, index) {
+                              final todo = todos[index];
+                              return TodoCard(
+                                todoId: todo.todoId,
+                                state: todo.state,
+                                todo: todo.todo,
+                                created: todo.created,
+                                onUpdate: (String newTodo, bool state) async {
+                                  await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
+                                },
+                                onUpdateState: (String newTodo, bool state) async {
+                                  await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
+                                },
+                                onDelete: (String todoId) async {
+                                  await ref.read(todoProvider.notifier).deleteTodo(todo.todoId);
+                                },
+                              );
+                            },
+                            separatorBuilder: (context, index) => const SizedBox(height: 10),
+                            itemCount: todos.length,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
-              // 할일 등록 영역
-              Padding(
-                // 추가 버튼을 Padding으로 감싸기
-                padding: const EdgeInsets.only(right: 20, left: 180),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (isShowAddTodo)
-                      Container(
-                        width: 1153,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          color: CommonColors.green,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 70),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
+          // 할일 등록 영역
+          Padding(
+            // 추가 버튼을 Padding으로 감싸기
+            padding: const EdgeInsets.only(right: 20, left: 180),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (isShowAddTodo)
+                  Container(
+                    width: 1153,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      color: CommonColors.green,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 70),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '할일 등록',
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Row(
                             children: [
-                              Text(
-                                '할일 등록',
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.w700,
+                              SizedBox(
+                                width: 850,
+                                height: 45,
+                                child: TextField(
+                                  controller: newTodoController,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: CommonColors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: CommonColors.white),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: CommonColors.white),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      borderSide: BorderSide(color: CommonColors.white),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 850,
-                                    height: 45,
-                                    child: TextField(
-                                      controller: newTodoController,
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: CommonColors.white,
-                                        border: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                          borderSide: BorderSide(color: CommonColors.white),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                          borderSide: BorderSide(color: CommonColors.white),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                          borderSide: BorderSide(color: CommonColors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 50),
-                                  IconButton(
-                                    onPressed: () async {
-                                      await ref.read(todoProvider.notifier).addTodo(newTodoController.text);
-                                      setState(() {
-                                        isShowAddTodo = false;
-                                        newTodoController.clear();
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.download,
-                                      color: Colors.black,
-                                      size: 48,
-                                    ),
-                                  ),
-                                ],
+                              SizedBox(width: 50),
+                              IconButton(
+                                onPressed: () async {
+                                  await ref.read(todoProvider.notifier).addTodo(newTodoController.text);
+                                  setState(() {
+                                    isShowAddTodo = false;
+                                    newTodoController.clear();
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.download,
+                                  color: Colors.black,
+                                  size: 48,
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    if (!isShowAddTodo)
-                      SizedBox(
-                        width: 100,
-                        height: 160,
-                      ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isShowAddTodo = !isShowAddTodo;
-                          newTodoController.clear();
-                        });
-                      },
-                      icon: Icon(
-                        Icons.add_circle_outline,
-                        color: CommonColors.blue,
-                        size: 96,
+                        ],
                       ),
                     ),
-                  ],
+                  ),
+                if (!isShowAddTodo)
+                  SizedBox(
+                    width: 100,
+                    height: 160,
+                  ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isShowAddTodo = !isShowAddTodo;
+                      newTodoController.clear();
+                    });
+                  },
+                  icon: Icon(
+                    Icons.add_circle_outline,
+                    color: CommonColors.blue,
+                    size: 96,
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
