@@ -1,28 +1,11 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_edu/common/common_api.dart';
 import 'package:flutter_edu/common/logger.dart';
+import 'package:flutter_edu/models/todo_model.dart';
 import 'package:flutter_edu/utils/error_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
-
-class TodoModel {
-  final String todoId;
-  final bool state;
-  final String todo;
-  final String created;
-
-  TodoModel({
-    required this.todoId,
-    required this.state,
-    required this.todo,
-    required this.created,
-  });
-
-  @override
-  String toString() {
-    return 'TodoModel(todoId: $todoId, state: $state, todo: $todo, created: $created)';
-  }
-}
 
 class Response {
   final bool status;
@@ -36,7 +19,6 @@ class Response {
 class TodoService {
   final dio = Dio(BaseOptions(baseUrl: CommonApi.todoEndpoint));
 
-  /// 모든 할일 조회
   Future<Response> getTodos() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -53,19 +35,12 @@ class TodoService {
         status: response.statusCode == HttpStatus.ok,
         statusCode: response.statusCode ?? 0,
         message: response.statusMessage ?? '',
-        data: (response.data['data'] as List)
-            .map((e) => TodoModel(
-                  todoId: e['todo_id'],
-                  state: e['state'],
-                  todo: e['todo'],
-                  created: e['created'],
-                ))
-            .toList(),
+        data: (response.data['data'] as List).map((e) => TodoModel.fromJson(e)).toList(),
       );
     } on DioException catch (e) {
       throw AppError(e.response?.data['message'] ?? '네트워크 오류가 발생했습니다.', statusCode: e.response?.statusCode);
     } catch (e) {
-      throw AppError('예상치 못한 오류가 발생했습니다.');
+      throw AppError('할일 목록을 가져오는데 실패했습니다.');
     }
   }
 

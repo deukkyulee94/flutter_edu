@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edu/common/common_colors.dart';
+import 'package:flutter_edu/viewmodels/todo_viewmodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/todo_card.dart';
-import '../providers/todo_provider.dart';
 
 class Todo extends ConsumerStatefulWidget {
   const Todo({super.key});
@@ -23,7 +23,7 @@ class _TodoState extends ConsumerState<Todo> {
   void initState() {
     super.initState();
     _loadToken();
-    Future.microtask(() => ref.read(todoProvider.notifier).fetchTodos());
+    Future.microtask(() => ref.read(todoViewModelProvider.notifier).fetchTodos());
     newTodoController = TextEditingController();
   }
 
@@ -37,7 +37,7 @@ class _TodoState extends ConsumerState<Todo> {
 
   @override
   Widget build(BuildContext context) {
-    final todos = ref.watch(todoProvider);
+    final todos = ref.watch(todoViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,13 +80,17 @@ class _TodoState extends ConsumerState<Todo> {
                                 todo: todo.todo,
                                 created: todo.created,
                                 onUpdate: (String newTodo, bool state) async {
-                                  await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
+                                  await ref
+                                      .read(todoViewModelProvider.notifier)
+                                      .updateTodo(todo.todoId, newTodo, state);
                                 },
                                 onUpdateState: (String newTodo, bool state) async {
-                                  await ref.read(todoProvider.notifier).updateTodo(todo.todoId, newTodo, state);
+                                  await ref
+                                      .read(todoViewModelProvider.notifier)
+                                      .updateTodo(todo.todoId, newTodo, state);
                                 },
                                 onDelete: (String todoId) async {
-                                  await ref.read(todoProvider.notifier).deleteTodo(todo.todoId);
+                                  await ref.read(todoViewModelProvider.notifier).deleteTodo(todo.todoId);
                                 },
                               );
                             },
@@ -159,7 +163,7 @@ class _TodoState extends ConsumerState<Todo> {
                               SizedBox(width: 50),
                               IconButton(
                                 onPressed: () async {
-                                  await ref.read(todoProvider.notifier).addTodo(newTodoController.text);
+                                  await ref.read(todoViewModelProvider.notifier).addTodo(newTodoController.text);
                                   setState(() {
                                     isShowAddTodo = false;
                                     newTodoController.clear();
